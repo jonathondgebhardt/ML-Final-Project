@@ -75,5 +75,3 @@ districtInfo = districtInfo[2:]
 # Validate intersection between two data sets
 checkIntersection()
 
-
-

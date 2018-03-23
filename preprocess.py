@@ -21,6 +21,12 @@ def checkIntersection():
     print('Matched', len(matched), 'out of', len(districtInfo), 'schools from districtInfo to irnLookups')
 
 
+# Print list of matching IRNs
+def printLookups(irn_list):
+    for i in irnLookups:
+        print (i, irnLookups.get(i))
+
+
 # grad.csv is what helps us map IRN's to County names
 # Build IRN dictionary: (String)county name: (List)IRN
 irnLookups = {}
@@ -75,5 +81,5 @@ districtInfo = districtInfo[2:]
 # Validate intersection between two data sets
 checkIntersection()
 
-
-
+# Print list of matching IRNs
+printLookups(irnLookups)    

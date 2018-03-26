@@ -79,7 +79,7 @@ districtInfo = districtInfo[2:]
 
 
 # Validate intersection between two data sets
-checkIntersection()
+# checkIntersection()
 
 # Print list of matching IRNs
-printLookups(irnLookups)    
+# printLookups(irnLookups)    

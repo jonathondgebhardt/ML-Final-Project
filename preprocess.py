@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 
 import csv
-
+import pandas as pd
+import numpy as np
 
 def checkIntersection():
     matched = []
@@ -76,10 +77,3 @@ with open('district.csv', newline='') as csvfile:
 
 # Trim off first two rows which are column names and empty space
 districtInfo = districtInfo[2:]
-
-
-# Validate intersection between two data sets
-# checkIntersection()
-
-# Print list of matching IRNs
-# printLookups(irnLookups)    

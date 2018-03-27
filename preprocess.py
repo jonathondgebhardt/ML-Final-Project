@@ -7,23 +7,19 @@
 #
 
 import csv
-
+import pandas as pd
+import numpy as np
 
 #
 # Builds a list of school information that is in the intersection
 # of grad and expanded csv's
 #
+# TODO: Match first column to irnLookups to get an intersection of data
 def getIntersection():
-    matched = []
-    count = 0
-    for row in districtInfo:
-        for irns in irnLookups.values():
-            if int(float(row[0])) in irns:
-                matched.append(int(float(row[0])))
-                break
-
-    return matched
-
+    matched = pd.DataFrame()
+    for i in range(districtInfo.shape[0]):
+        print(districtInfo.loc['IRN'])
+        k = input()
 
 #
 # Builds a list of school information that does not match 
@@ -62,43 +58,17 @@ with open('grad.csv', newline='') as csvfile:
             irnLookups[row[2]] = temp
 
 
+# Parsing district.csv, which contains various information
+# on schools by district
+districtInfo = pd.read_csv("expanded.csv", sep=',', quotechar='"')
+
+
 # mort.csv is all of the mortality data and is categorized by 
 # county name, which is why we had to relate IRN's to county
 # names.
-# Build mortality
-mortality = []
-line = 0
-with open('mort.csv', newline='') as csvfile:
-    reader = csv.reader(csvfile, delimiter=',', quotechar='"')
-    for row in reader:
-        # Ohio lines are between 2081 and 2170
-        if line > 2081 and line < 2170:
-            temp = row[0].split(",")
-            mortality.append(row)
-
-        # If we get to line 2170, we're done
-        if line >= 2170:
-            break
-
-        line += 1
-
-
-# Begin parsing district.csv, which contains various information
-# on schools by district
-districtInfo = []
-with open('expanded.csv', newline='') as csvfile:
-    reader = csv.reader(csvfile, delimiter=',', quotechar='"')
-    for row in reader:
-        districtInfo.append(row)
-
-
-# Trim off first row which is column names 
-districtInfo = districtInfo[1:]
-
-
-# Validate intersection between two data sets
-schoolIntersection = getIntersection()
-getComplement(schoolIntersection)
+# Would like to prepend the first row so we can have names of columns
+allMortality = pd.read_csv("mort.csv", sep=',', quotechar='"')
+ohioMortality = allMortality.iloc[2081:2169, :]
 
 
 # At this point, we have a list of mortality rate data and a list
@@ -106,3 +76,8 @@ getComplement(schoolIntersection)
 # to county names to better zero in on a local area.
 
 
+#shortData = data.head(10)
+#x = shortData.iloc[:, :1]
+#print(x.isin(schoolIntersection))
+
+getIntersection()

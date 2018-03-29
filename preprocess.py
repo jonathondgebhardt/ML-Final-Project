@@ -93,4 +93,7 @@ def main():
 
     ohioSchoolsIntersection.boxplot()
     plt.show()
+
+
+main()
     

@@ -1,79 +1,96 @@
 #!/usr/bin/env python3
 
+#
+# TODO: Normalize data. Operating expenditures blows everything out of proportion
+# when everything is plotted.
+#
+
+
+#
+# CRI: Percentage spent on classroom instruction
+# NCR: Percentage spent on non-classroom
+# ADM: Average Daily Membership
+#
+
+
 import csv
-import pandas as pd
 import numpy as np
-
-def checkIntersection():
-    matched = []
-    count = 0
-    for row in districtInfo:
-        for irns in irnLookups.values():
-            if int(float(row[1])) in irns:
-                matched.append(int(float(row[1])))
-                break
+import pandas as pd
+import matplotlib.pyplot as plt
 
 
-    for row in districtInfo:
-        if int(float(row[1])) not in matched:
-            print('Did not match', row[1], 'to irnLookups dictionary')
+# # Print list of matching IRNs
+# def printLookups(irn_list):
+#     for i in irnLookups:
+#         print (i, irnLookups.get(i))
 
 
-    print('Matched', len(matched), 'out of', len(districtInfo), 'schools from districtInfo to irnLookups')
+def main():
+    # grad.csv is what helps us map IRN's to County names. We will
+    # use it for cross-referencing
+    # Build IRN dictionary: (String)county name: (List)IRN
+    irnLookups = {}
+    with open('grad.csv', newline='') as csvfile:
+        reader = csv.reader(csvfile, delimiter=',', quotechar='"')
+        for row in reader:
+            # Row 2 is district name
+            # Row 0 is IRN
+            if row[2] not in irnLookups:
+                if row[2] != 'County':
+                    irnLookups[row[2]] = [int(row[0])]
+            else:
+                temp = irnLookups.get(row[2])
+                temp.append(int(row[0]))
+                irnLookups[row[2]] = temp
+
+    totalSchoolsInLookup = 0
+    for irns in irnLookups.values():
+        totalSchoolsInLookup += len(irns)
+
+    print('Schools in lookup table:', totalSchoolsInLookup)
 
 
-# Print list of matching IRNs
-def printLookups(irn_list):
-    for i in irnLookups:
-        print (i, irnLookups.get(i))
+    # Parse expanded.csv, which contains various information
+    # on schools by district. 
+    ohioSchools = pd.read_csv("expanded.csv", sep=',', quotechar='"')
+
+    # However, we need to abstract IRN's by county so we will take intersection 
+    # of district info and irnLookups. In order to reduce run time. the next 
+    # two files have been preconditioned by 'time.py'  
+    ohioSchoolsIntersection = pd.read_csv("expanded_intersection.csv", sep=',', quotechar='"')
+    ohioSchoolsComplement = pd.read_csv("expanded_complement.csv", sep=',', quotechar='"')
+
+    # Referencing each shape[0] gives us the amount of rows in the data set.
+    print('Total schools in dataset:', ohioSchools.shape[0])
+    print('Total schools in intersection:', ohioSchoolsIntersection.shape[0])
+    print('Total schools in complement:', ohioSchoolsComplement.shape[0])
+
+    missing = ohioSchools.shape[0] - (ohioSchoolsComplement.shape[0] + ohioSchoolsIntersection.shape[0])
+    print('Schools not accounted for', missing)
 
 
-# grad.csv is what helps us map IRN's to County names
-# Build IRN dictionary: (String)county name: (List)IRN
-irnLookups = {}
-with open('grad.csv', newline='') as csvfile:
-    reader = csv.reader(csvfile, delimiter=',', quotechar='"')
-    for row in reader:
-        # Row 2 is district name
-        # Row 0 is IRN
-        if row[2] not in irnLookups:
-            if row[2] != 'County':
-                irnLookups[row[2]] = [int(row[0])]
-        else:
-            temp = irnLookups.get(row[2])
-            temp.append(int(row[0]))
-            irnLookups[row[2]] = temp
+    # mort.csv is taken from an excel workbook that contains mortality
+    # rates of counties by mortality type. We've selected the "Mental and 
+    # substance abuse" sheet because it applies directly to what we're looking
+    # for. We could potentially look at other sheets.
+    #
+    # The first column is county name, second column is FIPS number, every 
+    # column except for the last is the mortality rate of that year 
+    # (1980 - 2014 by increments of 5 years), and the last column is the 
+    # overall change in mortality throughout the years.
+    #
+    # Build mortality, but only get mortality info for Ohio (Rows 2081 - 2168)
+    allMortality = pd.read_csv("mort.csv", sep=',', quotechar='"')
+    ohioMortality = allMortality.iloc[2081:2169, :]
 
 
-# mort.csv is all of the mortality data and is categorized by 
-# county name, which is why we had to relate IRN's to county
-# names.
-# Build mortality
-mortality = []
-line = 0
-with open('mort.csv', newline='') as csvfile:
-    reader = csv.reader(csvfile, delimiter=',', quotechar='"')
-    for row in reader:
-        # Ohio lines are between 2081 and 2170
-        if line > 2081 and line < 2170:
-            temp = row[0].split(",")
-            mortality.append(row)
+    # At this point, we have a list of mortality rate data and a list
+    # of school district financial expenditures. We've matched IRN's 
+    # to county names to better zero in on a local area.
 
-        # If we get to line 2170, we're done
-        if line >= 2170:
-            break
+    ohioSchoolsIntersection.hist()
+    plt.show()
 
-        line += 1
-
-
-# Begin parsing district.csv, which contains various information
-# on schools by district
-districtInfo = []
-with open('district.csv', newline='') as csvfile:
-    reader = csv.reader(csvfile, delimiter=',', quotechar='"')
-    for row in reader:
-        districtInfo.append(row)
-
-
-# Trim off first two rows which are column names and empty space
-districtInfo = districtInfo[2:]
+    ohioSchoolsIntersection.boxplot()
+    plt.show()
+    

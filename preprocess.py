@@ -12,11 +12,11 @@
 # ADM: Average Daily Membership
 #
 
+
 import csv
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-from pandas.plotting import scatter_matrix
 
 
 # # Print list of matching IRNs
@@ -93,6 +93,4 @@ def main():
 
     ohioSchoolsIntersection.boxplot()
     plt.show()
-
-
-main()
+    

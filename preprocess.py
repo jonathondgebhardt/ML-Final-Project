@@ -27,51 +27,6 @@ columnNames = [
         'Debt & Interest', 'Non-Operating', 'Operating EPEP'
         ]
 
-#
-# Builds a list of school information that is in the intersection
-# of grad and expanded csv's
-#
-# When creating a new dataframe object to work with, we are getting an additional 
-# 'Instr Staff Sup' column (we have duplicates of this column). The first appearance
-# of this column has value NaN, the second appearance as the actual value.
-#
-def getIntersection(universe, irnLookups):
-    # Create an empty data frame object with these labels as columns
-    matched = pd.DataFrame(columns=columnNames)
-	
-    # Iterate entire original dataframe object searching for IRN's that we know of.
-    # If found, add to new dataframe.
-    for i in range(universe.shape[0]):
-        for irns in irnLookups.values():
-            if int(universe.iat[i, 0]) in irns:
-                matched = matched.append(universe.iloc[i], ignore_index=True)
-
-    return matched        
-
-#
-# Builds a list of school information that does not match 
-# irnLookup table
-#
-def getComplement(universe, irnLookups):
-    # Create an empty data frame object with these labels as columns
-    complement = pd.DataFrame(columns=columnNames)
-	
-    # Iterate entire original dataframe object searching for IRN's that we know of.
-    # If not found, add to new dataframe.
-    found = False
-    for i in range(universe.shape[0]):
-        for irns in irnLookups.values():
-            if int(universe.iat[i, 0]) in irns:
-                found = True
-                break
-            
-        if not found:
-            complement = complement.append(universe.iloc[i], ignore_index=True)
-            found = False
-
-    return complement
-
-
 # # Print list of matching IRNs
 # def printLookups(irn_list):
 #     for i in irnLookups:
@@ -143,8 +98,6 @@ def main():
 
     ohioSchoolsIntersection.boxplot()
     plt.show()
-
-
 
 
 main()

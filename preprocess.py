@@ -18,14 +18,6 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from pandas.plotting import scatter_matrix
 
-columnNames = [
-        'IRN','Local Education Agency Name', 'Org Type','Weighted ADM','Operating Expenditures','CRI%',
-        'NCR%','Instruction', 'Pupil Support', 'Instr Staff Sup', 'CRI - Classroom Instr', 'Gen Admin',
-        'School Admin', 'Oper & Maint', 'Pupil Transp', 'Other Support', 'Food Service',
-        'NCR -Nonclassroom', 'Enterprise', 'Other Elem-Sec', 'Community Service', 'Adult Ed',
-        'Other Non Elem-Sec', 'Construction', 'Land & Structures', 'Instr Equipment', 'Other Equipment',
-        'Debt & Interest', 'Non-Operating', 'Operating EPEP'
-        ]
 
 # # Print list of matching IRNs
 # def printLookups(irn_list):
@@ -59,13 +51,16 @@ def main():
 
 
     # Parse expanded.csv, which contains various information
-    # on schools by district. However, we need to abstract IRN's by
-    # county so we will take the intersection of district info and
-    # irnLookups.
+    # on schools by district. 
     ohioSchools = pd.read_csv("expanded.csv", sep=',', quotechar='"')
+
+    # However, we need to abstract IRN's by county so we will take intersection 
+    # of district info and irnLookups. In order to reduce run time. the next 
+    # two files have been preconditioned by 'time.py'  
     ohioSchoolsIntersection = pd.read_csv("expanded_intersection.csv", sep=',', quotechar='"')
     ohioSchoolsComplement = pd.read_csv("expanded_complement.csv", sep=',', quotechar='"')
 
+    # Referencing each shape[0] gives us the amount of rows in the data set.
     print('Total schools in dataset:', ohioSchools.shape[0])
     print('Total schools in intersection:', ohioSchoolsIntersection.shape[0])
     print('Total schools in complement:', ohioSchoolsComplement.shape[0])

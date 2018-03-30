@@ -24,6 +24,10 @@ import matplotlib.pyplot as plt
 #     for i in irnLookups:
 #         print (i, irnLookups.get(i))
 
+# for county in irnLookups:
+#     temp = irnLookups.get(county)
+#     print (county, '(', len(temp), ')\n\t', irnLookups.get(county))
+
 
 def main():
     # grad.csv is what helps us map IRN's to County names. We will
@@ -88,11 +92,15 @@ def main():
     # of school district financial expenditures. We've matched IRN's 
     # to county names to better zero in on a local area.
 
-    ohioSchoolsIntersection.hist()
+    # Remove labels so that data appears to be normalized
+    ohioSchoolsIntersection.hist(xlabelsize=0, ylabelsize=0)
     plt.show()
 
-    ohioSchoolsIntersection.boxplot()
-    plt.show()
+    # ohioSchoolsIntersection.iloc[:, 14:].hist(xlabelsize=0, ylabelsize=0)
+    # plt.show()
+
+    # ohioSchoolsIntersection.boxplot()
+    # plt.show()
 
 
 main()

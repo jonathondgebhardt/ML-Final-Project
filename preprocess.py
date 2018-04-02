@@ -30,23 +30,36 @@ import matplotlib.pyplot as plt
 
 
 def main():
-    data = pd.read_csv("expanded_intersection.csv", sep=',', quotechar='"')
-    
+    data = pd.read_csv("expanded_intersection_trimmed.csv", sep=',', quotechar='"')
     # print(data.describe())
+    # print(data.shape)
+    data.set_index('IRN', inplace=True)
+
+    # Get one column by name
+    #montgomeryData = data.loc[data['County Name'] == 'Montgomery']
+
+    #print(montgomeryData.describe())
     
-    # data.hist(xlabelsize=0, ylabelsize=0)
-    # plt.show()
+    numerics = ['int16', 'int32', 'int64', 'float16', 'float32', 'float64']
+    data_numerics = data.select_dtypes(include=numerics)
+    data_numerics_norm = (data_numerics - data_numerics.mean()) / (data_numerics.max() - data_numerics.min())
+
+    # print(data_numerics_norm.describe())
+
+    data_numerics_norm.hist()
+    plt.show()
 
     # data.hist(column = 'County Mortality Rate') 
     # plt.show()
 
-    X = data.iloc[:, 6:7]
-    Y = data.iloc[:, 31:]
+    # X = data_numerics_norm.iloc[:, :2]
+    # Y = data_numerics_norm.iloc[:, 17:]
 
-    
+    #print(X)
+    #print(Y)
 
-    plt.scatter(data.iloc[:, 6:7], data.iloc[:, 31:])
-    plt.show()
+    # plt.scatter(X, Y)
+    # plt.show()
 
     # print(X.head())
     # print(Y.head())

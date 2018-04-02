@@ -87,3 +87,14 @@ with open('expanded_complement.csv', 'w', newline='') as csvfile:
         out.writerow(row)
 
 
+# Now that we have the combined dataset, trim off rows that we don't want
+# Or rather, specify the columns that we want to keep and write to csv file
+with open("expanded_intersection.csv","r") as source:
+    rdr= csv.reader( source )
+    with open("expanded_intersection_trimmed.csv","w") as result:
+        wtr= csv.writer( result )
+        for r in rdr:
+            # Columns we want to keep
+            wtr.writerow( (r[0], r[1], r[4], r[5], r[6], r[7], r[8], r[9], r[10], r[11], r[12], r[13], r[14], r[15], r[17], r[19], r[22], r[28], r[29], r[30], r[31]))
+
+    

@@ -1,10 +1,9 @@
 import csv
 
-# TODO: Merge trim and preprocess script
-
 # Build IRN look up list so that we can correlate County names to school
 # districts. This will be useful in building our final data set.
 irnLookups = {}
+gradRows = []
 with open('grad.csv', newline='') as csvfile:
     reader = csv.reader(csvfile, delimiter=',', quotechar='"')
     for row in reader:
@@ -14,6 +13,7 @@ with open('grad.csv', newline='') as csvfile:
         # the IRN as a key and the county as a value. 
         if row[2] != 'County' and int(row[0]) not in irnLookups.keys():
             irnLookups[int(row[0])] = row[2]
+            gradRows.append(row)
 
 
 # Build a list of intersection and complement IRNs in order to decrease
@@ -28,6 +28,8 @@ with open('expanded.csv', newline='') as csvfile:
     complement.append(headers)
     headers.append('County Name')
     headers.append('County Mortality Rate')
+    headers.append('Letter Grade')
+    headers.append('A/Not A')
     intersection.append(headers)
 
     # Iterate list of schools. If IRN is in lookup table, add to intersection.
@@ -52,6 +54,7 @@ intersectMortalityRates = allMortalityRates[2081:2169]
 
 
 # Write out intersection list to file
+letterEncode = {'A' : 4, 'B' : 3, 'C' : 2, 'D' : 1, 'F' : 0}
 with open('expanded_intersection.csv', 'w', newline='') as csvfile:
     out = csv.writer(csvfile, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
     
@@ -59,9 +62,23 @@ with open('expanded_intersection.csv', 'w', newline='') as csvfile:
         # Get county name from irnLookups so that we can append to
         # correct row. Again, we want to skip the first row to avoid
         # issues with casting row[0].
+        letter = '!'
+
         if row[0] != 'IRN':    
             countyName = irnLookups.get(int(row[0]))
-            #mortalityRate = 'None'
+
+            # Get letter grade of four year graduation rate from grad.csv. This is
+            # a potential output variable. 
+            for school in gradRows:
+                # We're looking for a matching IRN here. Once we've found it, get
+                # the letter grade and whether it's A or not.
+                if int(row[0]) == int(school[0]):
+                    letter = letterEncode.get(school[9])
+
+                    if letter:
+                        isA = int(letter / 4)
+
+                    break
 
             # Get mortality rate for that county from intersectMortalityRates
             # Column 9 in mort.csv is mortality rate for 2014
@@ -69,13 +86,17 @@ with open('expanded_intersection.csv', 'w', newline='') as csvfile:
             for county in intersectMortalityRates:
                 if countyName in county[0]:
                     mortalityRate = county[9]
+                    break
 
             # Append to row
             row.append(countyName)
             row.append(mortalityRate)
+            row.append(letter)
+            row.append(isA)
 
         # Finally, write to file
-        out.writerow(row)
+        if letter:
+            out.writerow(row)   
     
 
 # Write out complement list to file. We don't have county names for these IRN's
@@ -95,6 +116,8 @@ with open("expanded_intersection.csv","r") as source:
         wtr= csv.writer( result )
         for r in rdr:
             # Columns we want to keep
-            wtr.writerow( (r[0], r[1], r[4], r[5], r[6], r[7], r[8], r[9], r[10], r[11], r[12], r[13], r[14], r[15], r[17], r[19], r[22], r[28], r[29], r[30], r[31]))
+            wtr.writerow( (r[0], r[1], r[4], r[5], r[6], r[7], r[8], r[9], r[10], 
+            r[11], r[12], r[13], r[14], r[15], r[17], r[19], r[22], r[28], r[29], 
+            r[30], r[31], r[32], r[33]))
 
     

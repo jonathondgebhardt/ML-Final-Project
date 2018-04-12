@@ -17,6 +17,7 @@ import csv
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+from pandas.plotting import scatter_matrix
 
 
 # # Print list of matching IRNs
@@ -30,9 +31,9 @@ import matplotlib.pyplot as plt
 
 
 def main():
-    data = pd.read_csv("expanded_intersection_trimmed.csv", sep=',', quotechar='"')
-    # print(data.describe())
-    # print(data.shape)
+    data = pd.read_csv("trimmed.csv", sep=',', quotechar='"')
+    print(data.describe())
+    print(data.shape)
     data.set_index('IRN', inplace=True)
 
     # Get one column by name
@@ -46,7 +47,10 @@ def main():
 
     # print(data_numerics_norm.describe())
 
-    data_numerics_norm.hist()
+    # data_numerics_norm.hist()
+    # plt.show()
+
+    scatter_matrix(data_numerics_norm, figsize = (15, 15), alpha=0.2)
     plt.show()
 
     # data.hist(column = 'County Mortality Rate') 

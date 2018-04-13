@@ -1,72 +1,59 @@
 #!/usr/bin/env python3
 
-#
-# TODO: Normalize data. Operating expenditures blows everything out of proportion
-# when everything is plotted.
-#
-
-
-#
-# CRI: Percentage spent on classroom instruction
-# NCR: Percentage spent on non-classroom
-# ADM: Average Daily Membership
-#
-
-
-import csv
-import numpy as np
+# import csv
+# import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 from pandas.plotting import scatter_matrix
-
-
-# # Print list of matching IRNs
-# def printLookups(irn_list):
-#     for i in irnLookups:
-#         print (i, irnLookups.get(i))
-
-# for county in irnLookups:
-#     temp = irnLookups.get(county)
-#     print (county, '(', len(temp), ')\n\t', irnLookups.get(county))
-
+from sklearn import preprocessing 
+from sklearn.model_selection import train_test_split  
+from sklearn.preprocessing import StandardScaler 
+from sklearn.neural_network import MLPClassifier  
+from sklearn.metrics import classification_report, confusion_matrix  
+from sklearn.feature_selection import RFE
 
 def main():
     data = pd.read_csv("trimmed.csv", sep=',', quotechar='"')
-    print(data.describe())
-    print(data.shape)
     data.set_index('IRN', inplace=True)
 
-    # Get one column by name
-    #montgomeryData = data.loc[data['County Name'] == 'Montgomery']
+    # Assign data from first four columns to X variable
+    X = data.iloc[:, 1:12]
 
-    #print(montgomeryData.describe())
+    # Assign data from first fifth columns to y variable    
+    y = data.iloc[:, 13:]
+
+    # le = preprocessing.LabelEncoder()
+    # y = y.apply(le.fit_transform)  
     
-    numerics = ['int16', 'int32', 'int64', 'float16', 'float32', 'float64']
-    data_numerics = data.select_dtypes(include=numerics)
-    data_numerics_norm = (data_numerics - data_numerics.mean()) / (data_numerics.max() - data_numerics.min())
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.20)  
+     
+    scaler = StandardScaler()  
+    scaler.fit(X_train)
 
-    # print(data_numerics_norm.describe())
+    X_train = scaler.transform(X_train)  
+    X_test = scaler.transform(X_test) 
+    
+    mlp = MLPClassifier(hidden_layer_sizes=(10, 10, 10), max_iter=1000)  
+    mlp.fit(X_train, y_train.values.ravel())   
 
-    # data_numerics_norm.hist()
-    # plt.show()
+    predictions = mlp.predict(X_test) 
 
-    scatter_matrix(data_numerics_norm, figsize = (15, 15), alpha=0.2)
-    plt.show()
+    print(mlp.score(X, y))
+    print(confusion_matrix(y_test,predictions))  
+    print(classification_report(y_test,predictions)) 
 
-    # data.hist(column = 'County Mortality Rate') 
-    # plt.show()
+# create the RFE model and select 3 attributes
+# rfe = RFE(model, 3)
+# rfe = rfe.fit(dataset.data, dataset.target)
+# # summarize the selection of the attributes
+# print(rfe.support_)
+# print(rfe.ranking_)
 
-    # X = data_numerics_norm.iloc[:, :2]
-    # Y = data_numerics_norm.iloc[:, 17:]
+    rfe = RFE(mlp, 11)
+    rfe = rfe.fit(X_train, y_train)
 
-    #print(X)
-    #print(Y)
-
-    # plt.scatter(X, Y)
-    # plt.show()
-
-    # print(X.head())
-    # print(Y.head())
+    # print(rfe.support_)
+    print(rfe.ranking_)
 
 
 main()

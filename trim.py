@@ -43,20 +43,20 @@ def get_file_contents(file):
 
 # We will base our merge on the lrc data set since it contains both 
 # counties and LRCs
-with open('lrc.csv', newline='') as csvfile:
+with open('Converted_Datasets/lrc.csv', newline='') as csvfile:
     lrc_headers = get_headers(csvfile)
     lrc_contents = get_file_contents(csvfile)
 
 #expanded_contents = []
-with open('expanded.csv', newline='') as csvfile:
+with open('Converted_Datasets/expanded.csv', newline='') as csvfile:
     expanded_headers = get_headers(csvfile)
     expanded_contents = get_file_contents(csvfile)
 
-with open('cupp.csv', newline='') as csvfile:
+with open('Converted_Datasets/cupp.csv', newline='') as csvfile:
     cupp_headers = get_headers(csvfile)
     cupp_contents = get_file_contents(csvfile)
 
-with open('mort.csv', newline='') as csvfile:
+with open('Converted_Datasets/mort.csv', newline='') as csvfile:
     reader = csv.reader(csvfile, delimiter=',', quotechar='"')
 
     count = 0
@@ -170,7 +170,7 @@ for row in collosus[1:]:
         continue
 
 # Write out trimmed dataset to file
-with open('trimmed.csv', 'w', newline='') as csvfile:
+with open('Converted_Datasets/trimmed.csv', 'w', newline='') as csvfile:
     out = csv.writer(csvfile, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
     for row in trimmed_dataset:
         out.writerow(row)

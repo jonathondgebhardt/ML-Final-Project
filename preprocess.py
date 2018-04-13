@@ -13,7 +13,7 @@ from sklearn.metrics import classification_report, confusion_matrix
 from sklearn.feature_selection import RFE
 
 def main():
-    data = pd.read_csv("trimmed.csv", sep=',', quotechar='"')
+    data = pd.read_csv("Converted_Datasets/trimmed.csv", sep=',', quotechar='"')
     data.set_index('IRN', inplace=True)
 
     # Assign data from first four columns to X variable
